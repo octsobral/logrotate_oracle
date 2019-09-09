@@ -1,0 +1,68 @@
+---
+- hosts: all
+  remote_user: service_user
+  become: true
+  tasks:
+
+  - name: Apaga arquivo anterior
+    file:
+      path=/etc/logrotate.d/oracle
+      state=absent
+
+  - name: Criando arquivo
+    file:
+      dest=/etc/logrotate.d/oracle
+      state=touch
+
+  - name: Faz um append de bloco no arquivo
+    blockinfile:
+      path: /etc/logrotate.d/oracle
+      marker: ""
+      block: |
+        /oracle/BASE/diag/tnslsnr/{{ ansible_hostname }}/listener/trace/listener.log {
+           - monthly
+           - copytruncate
+           - rotate 12
+           - compress
+        }
+
+        /oracle/BASE/diag/tnslsnr/{{ ansible_hostname }}/listener_scan1/trace/listener_scan1.log {
+           - monthly
+           - copytruncate
+           - rotate 12
+           - compress
+        }
+
+        /oracle/BASE/diag/tnslsnr/{{ ansible_hostname }}/listener_scan2/trace/listener_scan2.log {
+           - monthly
+           - copytruncate
+           - rotate 12
+           - compress
+        }
+
+        /oracle/BASE/diag/tnslsnr/{{ ansible_hostname }}/listener_scan3/trace/listener_scan3.log {
+           - monthly
+           - copytruncate
+           - rotate 12
+           - compress
+        }
+
+        /oracle/GRID/12102/rdbms/audit/*.aud{
+           - weekly
+           - rotate 5
+           - delaycompres
+           - compress
+        }
+
+        /oracle/BASE/diag/tnslsnr/{{ ansible_hostname }}/listener/alert/*.xml{
+           - weekly
+           - rotate 5
+           - delaycompres
+           - compress
+        }
+        /oracle/BASE/diag/tnslsnr/{{ ansible_hostname }}/listener_scan*/alert/*.xml{
+           - weekly
+           - rotate 49
+           - delaycompres
+           - compress
+        }
